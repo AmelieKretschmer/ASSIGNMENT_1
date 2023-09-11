@@ -175,7 +175,7 @@ spelled differently and rename them accordingly.
 -   check the **janitor** R package.
 
 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|------------------------------------------------------------------------|
 | "There are four important verbs that affect the columns without changing the rows: [`mutate()`](https://dplyr.tidyverse.org/reference/mutate.html) creates new columns that are derived from the existing columns, [`select()`](https://dplyr.tidyverse.org/reference/select.html) changes which columns are present, [`rename()`](https://dplyr.tidyverse.org/reference/rename.html) changes the names of the columns, and [`relocate()`](https://dplyr.tidyverse.org/reference/relocate.html) changes the positions of the columns." |
 
 : Found in chapter on data transformation \^
@@ -216,9 +216,13 @@ number (*d* is for *digit*) within a string.
 
 ```{r extract_digits}
 ### Write your code here
-
-
+number_pattern <- "\\d"
+length_ut_train_cleaned$VISIT <- str_extract(length_ut_train$VISIT, number_pattern)
+word_data_cleaned$VISIT <- str_extract(word_data_cleaned$VISIT, number_pattern)
+  
 ```
+
+**3.(I think nr 3. was supposed to be here lol)**
 
 A similar task needs to be done regarding the value names of the
 Child.ID variable in the demographic data set. The values of this
