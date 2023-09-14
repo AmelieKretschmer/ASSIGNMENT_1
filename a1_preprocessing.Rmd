@@ -202,7 +202,9 @@ length_ut_train_cleaned <- rename(length_ut_train, Child_Morpheme_Amount = CHI_M
 
 
 #Renaming the extra variables like ID and VISIT
-demograph_train_cleaned <- rename(demograph_train, SUBJ = Child.ID, VISIT = Visit)
+demograph_train_cleaned <- rename(demograph_train, VISIT = Visit)
+length_ut_train_cleaned <- rename(length_ut_train, Child.ID = SUBJ)
+word_data_cleaned <- rename(word_data, Child.ID = SUBJ)
 
 ```
 
@@ -242,6 +244,11 @@ but more generic and thus less typing)
 
 ```{r remove_points}
 ### Write your code here
+#Matching a pattern as a dot preceeded by any letter that isnt capital.
+dot_pattern <- "\\."
+demograph_train_cleaned$Child.ID <- str_replace_all(demograph_train$Child.ID, dot_pattern, "")
+length_ut_train_cleaned$Child.ID <- str_replace_all(length_ut_train$SUBJ, dot_pattern, "")
+word_data_cleaned$Child.ID <- str_replace_all(word_data$SUBJ, dot_pattern, "")
 
 
 ```
@@ -302,6 +309,35 @@ intuitive (i.e. *nonVerbalIQ*, *verbalIQ*)
 ```{r rename_selected_variables}
 ### Write your code here
 
+##WITHIN THE DEMOGRAPH DATASET
+#Socialisation score is Vineland score
+demograph_train_relevant <- select(demograph_train_cleaned, 
+       'Child.ID', 
+       'VISIT', 
+       'Diagnosis', 
+       'Gender', 
+       'Age', 
+       'ADOS', 
+       'MullenRaw', 
+       'ExpressiveLangRaw',
+       'Socialization',
+       'Ethnicity') 
+
+#WITHIN THE LENGTH DATASET
+length_ut_relevant <- select(length_ut_train_cleaned, 
+                             'Child.ID', 
+                             'VISIT',
+                             'MOT_MLU',
+                             'CHI_MLU')
+
+#WITHIN WORD_DATA
+word_data_relevant <- select(word_data_cleaned, 
+                             'Child.ID', 
+                             'VISIT',
+                             'tokens_MOT',
+                             'tokens_CHI',
+                             'types_CHI',
+                             'types_MOT')
 
 ```
 
@@ -320,7 +356,7 @@ It is important here to check if merging the data sets:
 
 ```{r merge_data}
 ### Write your code here
-
+merged_dataset<-merge(demograph_train_relevant, length_ut_relevant, by = c("Child.ID","VISIT"))
 
 ```
 
@@ -343,7 +379,20 @@ A possible way to do so:
 
 ```{r add_first_visit_variables}
 ### Write your code here
+Visit1_dataset <- subset(merged_dataset, VISIT == 1) %>% 
+  select(
+    'VISIT',
+    'Child.ID',
+    'ADOS',
+    'MullenRaw',
+    'ExpressiveLangRaw',
+    'Socialization')
 
+Visit1_dataset %>% 
+  rename(ADOS1 = ADOS, MullenRaw1 = MullenRaw, ExpressiveLangRaw1 = ExpressiveLangRaw, Socialization1 = Socialization)
+
+# Merging
+merged_dataset_with_clear_1 <- merge(Visit1_dataset, merged_dataset)
 
   
 ```
@@ -366,6 +415,8 @@ developing) respectively.
 ### Write your code here
 
 
+merged_dataset_with_clear_1$Gender <- ifelse(merged_dataset_with_clear_1$Gender == 1, "M", "F")
+merged_dataset_with_clear_1$Diagnosis <- ifelse(merged_dataset_with_clear_1$Diagnosis == "A", "ASD", "TD")
 ```
 
 **8. Saving cleaned data**
@@ -375,8 +426,8 @@ under a name and at a location of your own choosing.
 
 ```{r save_changes}
 ### Write your code here
-
-
+final_df_assignment1 <- merged_dataset_with_clear_1
+write.csv(final_df_assignment1,"Assignment1Dataframe.csv")
 ```
 
 Your data is now ready for the next assignment!
