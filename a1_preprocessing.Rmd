@@ -379,7 +379,20 @@ A possible way to do so:
 
 ```{r add_first_visit_variables}
 ### Write your code here
+Visit1_dataset <- subset(merged_dataset, VISIT == 1) %>% 
+  select(
+    'VISIT',
+    'Child.ID',
+    'ADOS',
+    'MullenRaw',
+    'ExpressiveLangRaw',
+    'Socialization')
 
+Visit1_dataset %>% 
+  rename(ADOS1 = ADOS, MullenRaw1 = MullenRaw, ExpressiveLangRaw1 = ExpressiveLangRaw, Socialization1 = Socialization)
+
+# Merging
+merged_dataset_with_clear_1 <- merge(Visit1_dataset, merged_dataset)
 
   
 ```
@@ -402,6 +415,8 @@ developing) respectively.
 ### Write your code here
 
 
+merged_dataset_with_clear_1$Gender <- ifelse(merged_dataset_with_clear_1$Gender == 1, "M", "F")
+merged_dataset_with_clear_1$Diagnosis <- ifelse(merged_dataset_with_clear_1$Diagnosis == "A", "ASD", "TD")
 ```
 
 **8. Saving cleaned data**
@@ -411,8 +426,8 @@ under a name and at a location of your own choosing.
 
 ```{r save_changes}
 ### Write your code here
-
-
+final_df_assignment1 <- merged_dataset_with_clear_1
+write.csv(final_df_assignment1,"Assignment1Dataframe.csv")
 ```
 
 Your data is now ready for the next assignment!
